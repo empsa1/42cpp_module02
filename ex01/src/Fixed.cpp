@@ -1,28 +1,31 @@
 #include "../includes/Fixed.hpp"
+#include <iostream>
 #include <cmath>
 
-Fixed::Fixed() : value(0) {
+const int Fixed::numberOfFractionalBits = 8;
+
+Fixed::Fixed() : fixedNumberValue(0) {
     std::cout << "Default constructor called" << std::endl;
 }
 
-Fixed::Fixed(const int intValue) {
+Fixed::Fixed(const int value) {
     std::cout << "Integer constructor called" << std::endl;
-    value = intValue << fractionalBits;
+    fixedNumberValue = value << numberOfFractionalBits;
 }
 
-Fixed::Fixed(const float floatValue) {
+Fixed::Fixed(const float value) {
     std::cout << "Float constructor called" << std::endl;
-    value = roundf(floatValue * (1 << fractionalBits));
+    fixedNumberValue = roundf(value * (1 << numberOfFractionalBits));
 }
 
-Fixed::Fixed(const Fixed &other) : value(other.value) {
+Fixed::Fixed(const Fixed &other) : fixedNumberValue(other.fixedNumberValue) {
     std::cout << "Copy constructor called" << std::endl;
 }
 
 Fixed& Fixed::operator=(const Fixed &other) {
     std::cout << "Copy assignment operator called" << std::endl;
     if (this != &other) {
-        value = other.value;
+        fixedNumberValue = other.fixedNumberValue;
     }
     return *this;
 }
@@ -31,15 +34,26 @@ Fixed::~Fixed() {
     std::cout << "Destructor called" << std::endl;
 }
 
-float Fixed::toFloat() const {
-    return static_cast<float>(value) / (1 << fractionalBits);
+int Fixed::getRawBits() const {
+    std::cout << "getRawBits member function called" << std::endl;
+    return fixedNumberValue;
 }
 
-int Fixed::toInt() const {
-    return value >> fractionalBits;
+void Fixed::setRawBits(int const raw) {
+    std::cout << "setRawBits member function called" << std::endl;
+    fixedNumberValue = raw;
 }
 
-std::ostream& operator<<(std::ostream& os, const Fixed& fixed) {
-    os << fixed.toFloat();
-    return os;
+float Fixed::toFloat( void ) const {
+    return ((float)this->fixedNumberValue / (float)(1 << this->numberOfFractionalBits));
 }
+
+int Fixed::toInt( void ) const {
+    return (this->fixedNumberValue >> this->numberOfFractionalBits);
+}
+
+std::ostream	&operator<<(std::ostream &o, Fixed const &fixed)
+{
+	o << fixed.toFloat();
+	return (o);
+}   
